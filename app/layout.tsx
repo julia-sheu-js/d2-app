@@ -10,7 +10,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <h1 className="font-bold text-lg">DancerFlow</h1>
 
             <div className="flex gap-3">
-              <div className="bg-red-500 text-white p-4">TEST</div>
+              
               <Link href="/" className="px-4 py-2 rounded-full bg-white shadow hover:bg-pink-100 transition">Dashboard</Link>
               <Link href="/nutrition" className="px-4 py-2 rounded-full bg-white shadow hover:bg-blue-100 transition">Nutrition</Link>
               <Link href="/progress" className="px-4 py-2 rounded-full bg-white shadow hover:bg-purple-100 transition">Progress</Link>

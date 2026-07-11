@@ -12,6 +12,18 @@ export default function Calendar() {
 
   const daysInMonth = new Date(current.year, current.month + 1, 0).getDate()
 
+  const handlePrev = () => {
+    setCurrent(({ month, year }) =>
+      month === 0 ? { month: 11, year: year - 1 } : { month: month - 1, year }
+    )
+  }
+
+  const handleNext = () => {
+    setCurrent(({ month, year }) =>
+      month === 11 ? { month: 0, year: year + 1 } : { month: month + 1, year }
+    )
+  }
+
   const handleChange = (key: string, value: string) => {
     setEvents({ ...events, [key]: value })
   }
@@ -21,9 +33,9 @@ export default function Calendar() {
       <h1 className="text-2xl font-bold">Calendar</h1>
 
       <div className="flex justify-between items-center">
-        <button onClick={() => setCurrent({ ...current, month: current.month - 1 })}>←</button>
+        <button onClick={handlePrev}>←</button>
         <p className="font-medium">{current.month + 1}/{current.year}</p>
-        <button onClick={() => setCurrent({ ...current, month: current.month + 1 })}>→</button>
+        <button onClick={handleNext}>→</button>
       </div>
 
       <div className="grid grid-cols-7 gap-3">
