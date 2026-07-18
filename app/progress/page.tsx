@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell,
-} from 'recharts'
+} from 'recharts';
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import Card from '../../components/Card'
 
 interface ScoreData {
@@ -57,7 +59,7 @@ export default function ProgressPage() {
 
       setMessages([
         ...newMessages,
-        { role: 'assistant', content: data.reply || 'No response' },
+        { role: 'assistant', content: data.reply || `Error: ${data.error || 'No response'}` },
       ])
     } catch {
       setMessages([
@@ -118,7 +120,7 @@ User note: ${userNote || 'none'}
 
       const data = await res.json()
 
-      if (!data?.strength) throw new Error('Invalid AI response')
+      if (!data?.strength) throw new Error(data?.error || 'Invalid AI response')
 
       setScores([
         {
@@ -142,7 +144,8 @@ User note: ${userNote || 'none'}
       ])
     } catch (err) {
       console.error(err)
-      setError('Failed to generate report.')
+      const message = err instanceof Error ? err.message : 'Failed to generate report.'
+      setError(`Failed to generate report: ${message}`)
     } finally {
       setLoading(false)
     }
@@ -246,7 +249,38 @@ User note: ${userNote || 'none'}
                   : 'bg-white border text-gray-700'
               }`}
             >
-              {m.content}
+              {m.role === 'assistant' ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => <p className="mb-1.5 last:mb-0">{children}</p>,
+                    ul: ({ children }) => (
+                      <ul className="list-disc pl-4 mb-1.5 last:mb-0 space-y-0.5">{children}</ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal pl-4 mb-1.5 last:mb-0 space-y-0.5">{children}</ol>
+                    ),
+                    li: ({ children }) => <li>{children}</li>,
+                    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                    em: ({ children }) => <em className="italic">{children}</em>,
+                    h1: ({ children }) => <p className="font-semibold mb-1">{children}</p>,
+                    h2: ({ children }) => <p className="font-semibold mb-1">{children}</p>,
+                    h3: ({ children }) => <p className="font-semibold mb-1">{children}</p>,
+                    code: ({ children }) => (
+                      <code className="bg-black/10 rounded px-1 py-0.5 text-xs">{children}</code>
+                    ),
+                    a: ({ children, href }) => (
+                      <a href={href} target="_blank" rel="noreferrer" className="underline text-blue-500">
+                        {children}
+                      </a>
+                    ),
+                  }}
+                >
+                  {m.content}
+                </ReactMarkdown>
+              ) : (
+                m.content
+              )}
             </div>
           ))}
 
